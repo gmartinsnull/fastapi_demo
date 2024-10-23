@@ -18,3 +18,7 @@ def get_app_description():
 @app.get("/")
 async def root():
 	return {"message": get_app_description()}
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app)
