@@ -14,6 +14,10 @@ def get_app_description():
     	"Example usage: POST to '/predict/' with JSON data containing sepal_length, sepal_width, petal_length, and petal_width."
 	)
 
+@app.get("/predict/")
+async def predict():
+	return {"message": "This is the predict endpoint."}
+
 # Define the root endpoint to return the app description
 @app.get("/")
 async def root():
