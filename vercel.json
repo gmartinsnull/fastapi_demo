@@ -1,5 +1,6 @@
 {
   "version": 2,
+  "buildCommand": "pytest tests/unit_tests/ -s -v",
   "builds": [
     {
       "src": "app/main.py",
