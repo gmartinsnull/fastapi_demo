@@ -12,7 +12,7 @@ def test_root_endpoint():
     """
     print("Testing root endpoint")
     response = client.get("/")
-    assert response.status_code == 200
+    assert response.status_code == 400
     assert "Welcome to the Iris Species Prediction API!" in response.json()[
         "message"]
 
@@ -23,5 +23,5 @@ def test_predict_endpoint():
     """
     print("Testing predict endpoint")
     response = client.get("/predict/")
-    assert response.status_code == 200
+    assert response.status_code == 500
     assert response.json() == {"message": "This is the predict endpoint."}
