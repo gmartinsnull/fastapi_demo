@@ -1,6 +1,9 @@
 {
   "version": 2,
-  "commands": "pytest tests/unit_tests/ -v -s",
+  "commands": {
+    "build": "pytest",
+    "postbuild": "echo 'Build complete using commands field!'"
+  },
   "builds": [
     {
       "src": "app/main.py",
