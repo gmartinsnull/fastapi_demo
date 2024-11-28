@@ -1,16 +1,10 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "app/main.py",
-      "use": "@vercel/python"
-    }
-  ],
+  "buildCommand": "bash run_unit_tests.sh",
   "routes": [
     {
       "src": "/(.*)",
       "dest": "app/main.py"
     }
-  ],
-  "buildCommand": "bash run_unit_tests.sh"
+  ]
 }
