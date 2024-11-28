@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  test:
+  run_tests:
     runs-on: ubuntu-latest
 
     steps:
@@ -19,7 +19,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.12'  # specify the version you are using
+        python-version: '3.11.5'
 
     - name: Install dependencies
       run: |
