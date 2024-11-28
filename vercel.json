@@ -1,5 +1,4 @@
 {
-  "buildCommand": "pip install -r requirements.txt && pytest tests/unit_tests/ -v -s",
   "version": 2,
   "builds": [
     {
@@ -12,5 +11,6 @@
       "src": "/(.*)",
       "dest": "app/main.py"
     }
-  ]
+  ],
+  "buildCommand": "bash run_unit_tests.sh"
 }
