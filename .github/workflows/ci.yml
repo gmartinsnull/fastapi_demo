@@ -1,36 +1,42 @@
-# name: Run Tests and Deploy to Vercel
+name: Run Tests and Deploy to Vercel
 
-# on:
-#   push:
-#     branches:
-#       - main
+on:
+  push:
+    branches:
+      - main
 
-# jobs:
-#   run_tests:
-#     runs-on: ubuntu-latest
+jobs:
+  run_tests:
+    runs-on: ubuntu-latest
 
-#     steps:
-#     - name: Checkout code
-#       uses: actions/checkout@v3
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-#     - name: Set up Python
-#       uses: actions/setup-python@v4
-#       with:
-#         python-version: '3.11.5'
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11.5'
 
-#     - name: Install dependencies
-#       run: |
-#         python -m pip install --upgrade pip
-#         pip install -r requirements.txt
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
 
-#     - name: Run tests
-#       run: |
-#         pytest
+    - name: Run tests
+      run: |
+        pytest
 
-#     - name: Deploy to Vercel
-#       uses: amondnet/vercel-action@v20
-#       with:
-#         vercel-token: ${{ secrets.VERCEL_TOKEN }}
-#         vercel-args: '--prod'
-#         working-directory: app/
-#         github-token: ${{ secrets.GITHUB_TOKEN }}
+    # deploy to vercel
+    - name: Install Vercel CLI
+      run: npm install --global vercel@latest
+
+    - name: Pull Vercel Environment Information
+      run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+
+    - name: Build Project Artifacts
+      run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+
+    - name: Deploy Project Artifacts to Vercel
+      run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+
