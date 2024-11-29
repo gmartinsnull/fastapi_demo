@@ -18,7 +18,7 @@ async def test():
     """
     try:
         # token_username: str = access_token.get("sub")
-        return {"success": "public api"}
+        return {"success": "public api test"}
     except Exception as e:  # pylint: disable=broad-except
         print(f"Error getting test api: {e}")
         return {"message": "Error getting test api"}
