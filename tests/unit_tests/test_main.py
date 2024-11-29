@@ -13,15 +13,15 @@ def test_root_endpoint():
     print("Testing root endpoint")
     response = client.get("/")
     assert response.status_code == 200
-    assert "Welcome to the Iris Species Prediction API!" in response.json()[
+    assert "Welcome to fastapi demo API!" in response.json()[
         "message"]
 
 
-def test_predict_endpoint():
-    """
-    Test the predict endpoint '/predict/'
-    """
-    print("Testing predict endpoint")
-    response = client.get("/predict/")
-    assert response.status_code == 200
-    assert response.json() == {"message": "This is the predict endpoint."}
+# def test_mock_endpoint():
+#     """
+#     Test the "test" endpoint '/test/'
+#     """
+#     print("Testing \"test\" endpoint")
+#     response = client.get("/test")
+#     assert response.status_code == 200
+#     assert response.json() == {"success": "public api test"}

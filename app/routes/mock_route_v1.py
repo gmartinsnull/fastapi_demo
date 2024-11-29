@@ -17,7 +17,6 @@ async def test():
     get user from database by username
     """
     try:
-        # token_username: str = access_token.get("sub")
         return {"success": "public api test"}
     except Exception as e:  # pylint: disable=broad-except
         print(f"Error getting test api: {e}")
