@@ -1,10 +1,7 @@
-name: Python CI
+name: Run Tests and Deploy to Vercel
 
 on:
   push:
-    branches:
-      - main
-  pull_request:
     branches:
       - main
 
@@ -29,3 +26,12 @@ jobs:
     - name: Run tests
       run: |
         pytest
+
+    - name: Deploy to Vercel
+            if: success()
+            uses: amondnet/vercel-action@v20
+            with:
+              vercel-token: ${{ secrets.VERCEL_TOKEN }}
+              vercel-args: '--prod'
+              working-directory: app/
+              github-token: ${{ secrets.GITHUB_TOKEN }}  # Allows auto-commenting on GitHub PR
