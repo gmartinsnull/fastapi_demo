@@ -4,37 +4,21 @@ Root endpoint returns the app description
 """
 
 from fastapi import FastAPI
+from .routes import test_route_v1
+from .routes.middleware import AuthMiddleware
 
-app = FastAPI()
 
-
-def get_app_description():
+def create_app():
     """
-    Define a function to return a description of the app
+    create FastAPI app
     """
-    return (
-        "Welcome to the Iris Species Prediction API!"
-        "This API allows you to predict the species of an iris flower based on its sepal and petal measurements."
-        "Use the '/predict/' endpoint with a POST request to make predictions."
-        "Example usage: POST to '/predict/' with JSON data containing sepal_length, sepal_width, petal_length, and petal_width."
-    )
+    fastapi = FastAPI()
+    fastapi.include_router(test_route_v1.router)
+    fastapi.include_router(test_route_v1.router, prefix="/v1")
+    return fastapi
 
 
-@app.get("/predict/")
-async def predict():
-    """
-    Prediction mock endpoint
-    """
-    return {"message": "This is the predict endpoint."}
+app = create_app()
 
-
-@app.get("/")
-async def root():
-    """
-    Define the root endpoint to return the app description
-    """
-    return {"message": get_app_description()}
-
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app)
+# add custom authentication to app
+app.add_middleware(AuthMiddleware)
