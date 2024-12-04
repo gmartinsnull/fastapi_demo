@@ -12,7 +12,7 @@ def test_root_endpoint():
     """
     print("Testing root endpoint")
     response = client.get("/")
-    assert response.status_code == 404
+    assert response.status_code == 200
     assert "Welcome to fastapi demo API!" in response.json()[
         "message"]
 
