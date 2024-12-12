@@ -1,6 +1,6 @@
 services:
   api:
     build: .
-    image: k8s-fastapi-demo:0.0.1
+    image: gmartinsnull/k8s-fastapi-demo:0.0.2
     ports:
       - "8000:80"
