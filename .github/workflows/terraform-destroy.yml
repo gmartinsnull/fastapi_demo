@@ -1,0 +1,32 @@
+name: Destroy AWS Resources
+
+on:
+  workflow_dispatch: # Allows manual trigger from the Actions tab
+
+jobs:
+  destroy:
+    name: Destroy Terraform Resources
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: 1.10.3
+        cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+
+    - name: Set up AWS credentials
+      uses: aws-actions/configure-aws-credentials@v3
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-west-2
+
+    - name: Initialize Terraform
+      run: terraform init
+
+    - name: Destroy AWS Resources
+      run: terraform destroy -auto-approve
