@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: api
-        image: gmartinsnull/k8s-fastapi-demo:0.0.2
+        image: gmartinsnull/k8s-fastapi-demo:0.0.3
         ports:
         - containerPort: 80
         resources:
