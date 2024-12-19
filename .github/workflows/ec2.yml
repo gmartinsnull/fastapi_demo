@@ -56,7 +56,7 @@ jobs:
         key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
         script: |
           sudo yum update -y
-          sudo yum install docker -y
+          sudo yum install -y git docker
           sudo systemctl start docker
           sudo systemctl enable docker
           sudo usermod -aG docker ec2-user
