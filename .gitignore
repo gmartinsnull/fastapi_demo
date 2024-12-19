@@ -29,6 +29,9 @@ archive.zip
 .*.sw?
 .cache
 
+# terraform
+.terraform
+
 # macOS
 .DS_Store
 
