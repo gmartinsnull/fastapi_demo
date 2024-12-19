@@ -36,6 +36,18 @@ jobs:
       run: |
         echo "EC2_PUBLIC_IP=$(jq -r '.ec2_public_ip.value' tf_output.json)" >> $GITHUB_ENV
 
+    - name: Retry SSH connection until ready
+      run: |
+        for i in {1..5}; do
+          if nc -z -w5 ${{ env.EC2_PUBLIC_IP }} 22; then
+            echo "SSH is ready!"
+            break
+          else
+            echo "Waiting for SSH to become available..."
+            sleep 30
+          fi
+        done
+
     # Step 4: Install Docker on EC2
     - name: SSH and Install Docker
       uses: appleboy/ssh-action@v0.1.6
