@@ -47,7 +47,7 @@ jobs:
           fi
         done
 
-    # Step 4: Install Docker on EC2
+    # Step 4: Install Git and Docker on EC2 
     - name: SSH and Install Docker
       uses: appleboy/ssh-action@v0.1.6
       with:
@@ -74,3 +74,39 @@ jobs:
           cd ~/fastapi_demo
           docker build -t fastapi_demo .
           docker run -d -p 8000:80 fastapi_demo
+
+    # Step 6: Configure Nginx as a Reverse Proxy
+    - name: Configure Nginx for Reverse Proxy
+      uses: appleboy/ssh-action@v0.1.6
+      with:
+        host: ${{ env.EC2_PUBLIC_IP }}
+        username: ec2-user
+        key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+        script: |
+          # Install Nginx
+          sudo yum install nginx -y
+          
+          # Start and enable Nginx service
+          sudo systemctl start nginx
+          sudo systemctl enable nginx
+          
+          # Configure Nginx
+          sudo bash -c "cat > /etc/nginx/nginx.conf" << 'EOF'
+          server {
+              listen 80;
+              server_name ${{ env.EC2_PUBLIC_IP }};
+
+              location / {
+                  proxy_pass http://localhost:8000;
+                  proxy_set_header Host $host;
+                  proxy_set_header X-Real-IP $remote_addr;
+                  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+              }
+          }
+          EOF
+
+          # Test Nginx configuration
+          sudo nginx -t
+          
+          # Reload Nginx to apply changes
+          sudo systemctl reload nginx
