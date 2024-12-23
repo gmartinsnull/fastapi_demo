@@ -9,6 +9,8 @@ jobs:
   provision:
     name: Provision EC2
     runs-on: ubuntu-latest
+    outputs:
+      ec2_public_ip: ${{ steps.parse_ip.outputs.ec2_public_ip }}
     steps:
     # Step 1: Checkout Repository
     - name: Checkout Repository
@@ -30,20 +32,21 @@ jobs:
         terraform apply -auto-approve
         terraform output -json > tf_output.json
 
+    # Step 4: Parse EC2 Public IP
+    - name: Parse EC2 Public IP
+      id: parse_ip
+      run: |
+        echo "::set-output name=ec2_public_ip::$(jq -r '.ec2_public_ip.value' tf_output.json)"
+
   configure-ec2:
     name: Configure EC2
     runs-on: ubuntu-latest
     needs: provision
     steps:
-      - name: Parse EC2 Public IP
-        id: parse_ip
-        run: |
-          echo "EC2_PUBLIC_IP=$(jq -r '.ec2_public_ip.value' tf_output.json)" >> $GITHUB_ENV
-
       - name: Retry SSH connection until ready
         run: |
           for i in {1..5}; do
-            if nc -z -w5 ${{ env.EC2_PUBLIC_IP }} 22; then
+            if nc -z -w5 ${{ needs.provision.outputs.ec2_public_ip }} 22; then
               echo "SSH is ready!"
               break
             else
@@ -52,7 +55,7 @@ jobs:
             fi
           done
   
-  # Step 6: Configure Nginx as a Reverse Proxy
+  # Step 5: Configure Nginx as a Reverse Proxy
   install-nginx:
     name: Install Nginx
     runs-on: ubuntu-latest
@@ -61,7 +64,7 @@ jobs:
       - name: Configure Nginx for Reverse Proxy
         uses: appleboy/ssh-action@v0.1.6
         with:
-          host: ${{ env.EC2_PUBLIC_IP }}
+          host: ${{ needs.provision.outputs.ec2_public_ip }}
           username: ec2-user
           key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
           script: |
@@ -76,7 +79,7 @@ jobs:
             sudo mkdir -p /etc/nginx/conf.d/ && sudo bash -c "cat > /etc/nginx/conf.d/fastapi-demo.conf" <<EOF
             server {
                 listen 80;
-                server_name ${{ env.EC2_PUBLIC_IP }};
+                server_name ${{ needs.provision.outputs.ec2_public_ip }};
 
                 location / {
                     proxy_pass http://localhost:8000;
@@ -93,7 +96,7 @@ jobs:
             # Reload Nginx to apply changes
             sudo systemctl reload nginx
 
-  # Step 4: Install Git and Docker on EC2 
+  # Step 6: Install Git and Docker on EC2 
   install-docker:
     name: Install Docker
     runs-on: ubuntu-latest
@@ -102,7 +105,7 @@ jobs:
       - name: SSH and Install Docker and Git
         uses: appleboy/ssh-action@v0.1.6
         with:
-          host: ${{ env.EC2_PUBLIC_IP }}
+          host: ${{ needs.provision.outputs.ec2_public_ip }}
           username: ec2-user
           key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
           script: |
@@ -112,7 +115,7 @@ jobs:
             sudo systemctl enable docker
             sudo usermod -aG docker ec2-user
 
-  # Step 5: Clone Repository and Build Docker Image
+  # Step 7: Clone Repository and Build Docker Image
   build-run-app:
     name: Build Docker Image
     runs-on: ubuntu-latest
@@ -121,7 +124,7 @@ jobs:
       - name: Clone Repo and Run Docker
         uses: appleboy/ssh-action@v0.1.6
         with:
-          host: ${{ env.EC2_PUBLIC_IP }}
+          host: ${{ needs.provision.outputs.ec2_public_ip }}
           username: ec2-user
           key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
           script: |
