@@ -36,7 +36,7 @@ jobs:
     - name: Parse EC2 Public IP
       id: parse_ip
       run: |
-        echo "::set-output name=ec2_public_ip::$(jq -r '.ec2_public_ip.value' tf_output.json)"
+        echo "ec2_public_ip=$(jq -r '.ec2_public_ip.value' tf_output.json)" >> $GITHUB_OUTPUT
 
   configure-ec2:
     name: Configure EC2
@@ -50,7 +50,7 @@ jobs:
               echo "SSH is ready!"
               break
             else
-              echo "Waiting for SSH to become available..."
+              echo "Waiting for SSH to become available... (attempt $i)"
               sleep 30
             fi
           done
