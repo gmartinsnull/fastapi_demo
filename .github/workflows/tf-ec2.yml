@@ -46,6 +46,7 @@ jobs:
       - name: Retry SSH connection until ready
         run: |
           for i in {1..5}; do
+            echo "Checking SSH availability on ${{ needs.provision.outputs.ec2_public_ip }}..."
             if nc -z -w5 ${{ needs.provision.outputs.ec2_public_ip }} 22; then
               echo "SSH is ready!"
               break
@@ -67,6 +68,8 @@ jobs:
           host: ${{ needs.provision.outputs.ec2_public_ip }}
           username: ec2-user
           key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+          envs: |
+            PUBLIC_IP=${{ needs.provision.outputs.ec2_public_ip }}
           script: |
             # Install Nginx
             sudo yum install nginx -y
@@ -79,7 +82,7 @@ jobs:
             sudo mkdir -p /etc/nginx/conf.d/ && sudo bash -c "cat > /etc/nginx/conf.d/fastapi-demo.conf" <<EOF
             server {
                 listen 80;
-                server_name ${{ needs.provision.outputs.ec2_public_ip }};
+                server_name ${PUBLIC_IP};
 
                 location / {
                     proxy_pass http://localhost:8000;
