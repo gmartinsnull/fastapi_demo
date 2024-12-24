@@ -64,12 +64,12 @@ jobs:
     steps:
       - name: Configure Nginx for Reverse Proxy
         uses: appleboy/ssh-action@v0.1.6
+        env:
+          PUBLIC_IP: ${{ needs.provision.outputs.ec2_public_ip }}
         with:
           host: ${{ needs.provision.outputs.ec2_public_ip }}
           username: ec2-user
           key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
-          envs: |
-            PUBLIC_IP=${{ needs.provision.outputs.ec2_public_ip }}
           script: |
             # Install Nginx
             sudo yum install nginx -y
