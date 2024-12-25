@@ -86,7 +86,7 @@ jobs:
             sudo mkdir -p /etc/nginx/conf.d/ && sudo bash -c "cat > /etc/nginx/conf.d/fastapi-demo.conf" <<EOF
             server {
                 listen 80;
-                server_name ${PUBLIC_IP};
+                server_name ${{ env.PUBLIC_IP }};
 
                 location / {
                     proxy_pass http://localhost:8000;
