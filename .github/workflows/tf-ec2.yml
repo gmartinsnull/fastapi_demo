@@ -64,10 +64,9 @@ jobs:
       - provision
       - configure-ec2
     steps:
-      - env:
-          PUBLIC_IP: ${{ needs.provision.outputs.ec2_public_ip }}
+      - name: Debug Public IP
         run: | 
-          echo "Debug: Public IP is ${{ env.PUBLIC_IP }}"
+          echo "Debug: Public IP is ${{ needs.provision.outputs.ec2_public_ip }}"
       - name: Configure Nginx for Reverse Proxy
         uses: appleboy/ssh-action@v0.1.6
         with:
@@ -81,12 +80,14 @@ jobs:
             # Start and enable Nginx service
             sudo systemctl start nginx
             sudo systemctl enable nginx
-            
+
+            echo "Configuring Nginx with server_name ${{ needs.provision.outputs.ec2_public_ip }}"            
+
             # Configure Nginx
             sudo mkdir -p /etc/nginx/conf.d/ && sudo bash -c "cat > /etc/nginx/conf.d/fastapi-demo.conf" <<EOF
             server {
                 listen 80;
-                server_name ${{ env.PUBLIC_IP }};
+                server_name ${{ needs.provision.outputs.ec2_public_ip }};
 
                 location / {
                     proxy_pass http://localhost:8000;
